@@ -1,0 +1,37 @@
+name: Compilar APK de Kese App
+
+on:
+  push:
+    branches: [ "main", "master" ] # Se activa cuando subas cambios a main o master (ajusta si usas otra rama)
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: ☕ Configurar Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: 🐦 Configurar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.x' # Utiliza la versión actual de Flutter
+          channel: 'stable'
+
+      - name: 📦 Instalar dependencias
+        run: flutter pub get
+
+      - name: 🔨 Construir APK de liberacion (Release)
+        run: flutter build apk --release
+
+      - name: 🚀 Subir APK como artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: kese-app-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
